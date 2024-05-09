@@ -16,7 +16,7 @@ import (
 func NewUserRouter(env *bootstrap.Env, timeout time.Duration, db orm.Database, r *gin.Engine) {
 	userRepo := repository.NewUserRepository(db)
 	userHandler := &handler.UserHandler{
-		UserService: service.NewUserService(userRepo, env),
+		UserService: service.NewUserService(userRepo, env, timeout),
 	}
 	user := r.Group("/user")
 	user.POST("/login", userHandler.Login)

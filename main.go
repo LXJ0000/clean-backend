@@ -18,7 +18,7 @@ func main() {
 	db := app.Orm
 	redisCache := app.RedisCache
 
-	timeout := time.Duration(env.ContextTimeout) * time.Second // 接口超时时间
+	timeout := time.Duration(env.ContextTimeout) * time.Hour // 接口超时时间
 
 	server := gin.Default()
 	server.Use(middleware.CORSMiddleware())

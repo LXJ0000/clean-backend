@@ -10,12 +10,14 @@ const (
 
 type User struct {
 	Model
-	UserID   int64  `json:"user_id" gorm:"primaryKey"`
-	UserName string `json:"user_name" gorm:"unique"`
-	Email    string `json:"email"`
-	Password string `json:"-"`
+	UserID   int64  `json:"user_id,string" gorm:"primaryKey"`
+	UserName string `json:"user_name" gorm:"unique" binding:"required"`
+	NickName string `json:"nick_name" binding:"required"`
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"-" binding:"required"`
 }
 
+//go:generate mockgen -source=./user.go -destination=./mock/user.go -package=domain_mock
 type UserRepository interface {
 	Create(c context.Context, u User) error
 	GetByEmail(c context.Context, email string) (User, error)
@@ -40,6 +42,7 @@ type LoginReq struct {
 
 type RegisterReq struct {
 	UserName string `json:"user_name"`
+	NickName string `json:"nick_name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }

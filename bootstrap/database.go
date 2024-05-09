@@ -20,6 +20,7 @@ func NewOrmDatabase(env *Env) orm.Database {
 
 	if err = db.AutoMigrate(
 		&domain.User{},
+		&domain.Post{},
 	); err != nil {
 		log.Fatal(err)
 	}

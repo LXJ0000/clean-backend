@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/LXJ0000/clean-backend/bootstrap"
 	"github.com/LXJ0000/clean-backend/internal/domain"
@@ -12,19 +13,24 @@ import (
 )
 
 type userService struct {
-	userRepo domain.UserRepository
-	Env      *bootstrap.Env
+	userRepo       domain.UserRepository
+	Env            *bootstrap.Env
+	contextTimeout time.Duration
 }
 
-func NewUserService(userRepo domain.UserRepository, Env *bootstrap.Env) domain.UserService {
+func NewUserService(userRepo domain.UserRepository, Env *bootstrap.Env, contextTimeout time.Duration) domain.UserService {
 	return &userService{
-		userRepo: userRepo,
-		Env:      Env,
+		userRepo:       userRepo,
+		Env:            Env,
+		contextTimeout: contextTimeout,
 	}
 }
 
 func (u *userService) Detail(c context.Context, req domain.UserDetailReq) (domain.Response, error) {
-	user, err := u.userRepo.GetByID(c, req.UserID)
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	user, err := u.userRepo.GetByID(ctx, req.UserID)
 	if err != nil {
 		return domain.ErrorResp("User Not Found With DB Error", err), err
 	}
@@ -32,7 +38,10 @@ func (u *userService) Detail(c context.Context, req domain.UserDetailReq) (domai
 }
 
 func (u *userService) Login(c context.Context, req domain.LoginReq) (domain.Response, error) {
-	user, err := u.userRepo.GetByEmail(c, req.Email)
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	user, err := u.userRepo.GetByEmail(ctx, req.Email)
 	if err != nil {
 		return domain.ErrorResp("User not found with the given email", err), err
 	}
@@ -57,12 +66,16 @@ func (u *userService) Login(c context.Context, req domain.LoginReq) (domain.Resp
 		Data: map[string]interface{}{
 			"access_token":  accessToken,
 			"refresh_token": refreshToken,
+			"user_detail":   user,
 		},
 	}
 	return resp, nil
 }
 
 func (u *userService) Signup(c context.Context, req domain.RegisterReq) (domain.Response, error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
 	if _, err := u.userRepo.GetByEmail(c, req.Email); err == nil {
 		return domain.ErrorResp("User already exists with the given email", nil), errors.New("user already exists with the given email")
 	}
@@ -84,7 +97,7 @@ func (u *userService) Signup(c context.Context, req domain.RegisterReq) (domain.
 		Password: req.Password,
 	}
 
-	err = u.userRepo.Create(c, user)
+	err = u.userRepo.Create(ctx, user)
 	if err != nil {
 		return domain.ErrorResp("Create User Fail With DB Error", err), err
 	}

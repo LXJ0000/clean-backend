@@ -21,5 +21,5 @@ func Setup(env *bootstrap.Env, timeout time.Duration, db orm.Database, redisCach
 
 	// User
 	NewUserRouter(env, timeout, db, gin)
-
+	NewPostRouter(env, timeout, db, gin, redisCache)
 }

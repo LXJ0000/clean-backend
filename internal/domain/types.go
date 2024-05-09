@@ -12,3 +12,10 @@ type Model struct {
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
+
+const (
+	DefaultPage = 0
+	DefaultSize = 10
+
+)
+
