@@ -35,3 +35,11 @@ func (c *RedisCache) LuaWithreturnInt(ctx context.Context, luaPath string, key [
 func (c *RedisCache) LuaWithReturnBool(ctx context.Context, luaPath string, key []string, args ...interface{}) (bool, error) {
 	return c.cmd.Eval(ctx, luaPath, key, args).Bool()
 }
+
+func (c *RedisCache) HSet(ctx context.Context, key string, values ...interface{}) error {
+	return c.cmd.HSet(ctx, key, values).Err()
+}
+
+func (c *RedisCache) HGetAll(ctx context.Context, key string) (map[string]string, error) {
+	return c.cmd.HGetAll(ctx, key).Result()
+}
