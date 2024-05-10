@@ -44,6 +44,7 @@ func (repo *interactionRepository) GetByIDs(c context.Context, biz string, ids [
 // BatchIncrReadCount 批量增加read_cnt 需保证 len(biz) == len(id)
 func (repo *interactionRepository) BatchIncrReadCount(c context.Context, biz []string, id []int64) error {
 	fn := func(tx *gorm.DB) error {
+		dao := orm.NewDatabase(tx)
 		update := map[string]interface{}{
 			"read_cnt": gorm.Expr("`read_cnt` + 1"),
 		}
@@ -55,7 +56,7 @@ func (repo *interactionRepository) BatchIncrReadCount(c context.Context, biz []s
 				Biz:     biz[i],
 				ReadCnt: 1,
 			}
-			if err := repo.dao.UpsertOne(c, &domain.Interaction{}, update, create); err != nil {
+			if err := dao.UpsertOne(c, &domain.Interaction{}, update, create); err != nil {
 				slog.Error("IncrReadCount Fail", "Error", err.Error(), "biz", biz[i], "biz_id", id[i])
 			}
 			go func() { // TODO new lua script or pipeline
