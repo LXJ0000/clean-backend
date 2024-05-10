@@ -13,10 +13,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewPostRouter(env *bootstrap.Env, timeout time.Duration, db orm.Database, r *gin.Engine, redisCache cache.Cache) {
+func NewPostRouter(env *bootstrap.Env, timeout time.Duration, db orm.Database, r *gin.Engine, redisCache cache.RedisCache) {
 	postRepo := repository.NewPostRepository(db, redisCache)
+	interRepo := repository.NewInteractionRepository(db, redisCache)
+	interactionService := service.NewInteractionService(interRepo, timeout)
 	postHandler := &handler.PostHandler{
-		PostService: service.NewPostService(postRepo, timeout, env),
+		PostService: service.NewPostService(postRepo, timeout, env, interactionService),
 	}
 	post := r.Group("/post")
 	post.Use(middleware.JwtAuthMiddleware(env.AccessTokenSecret))

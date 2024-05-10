@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"log/slog"
 	"time"
 
 	"github.com/LXJ0000/clean-backend/bootstrap"
@@ -11,16 +12,18 @@ import (
 )
 
 type postService struct {
-	postRepo       domain.PostRepository
-	contextTimeout time.Duration
-	env            *bootstrap.Env
+	postRepo           domain.PostRepository
+	interactionService domain.InteractionService
+	contextTimeout     time.Duration
+	env                *bootstrap.Env
 }
 
-func NewPostService(postRepo domain.PostRepository, timeout time.Duration, env *bootstrap.Env) domain.PostService {
+func NewPostService(postRepo domain.PostRepository, timeout time.Duration, env *bootstrap.Env, interactionService domain.InteractionService) domain.PostService {
 	return &postService{
-		postRepo:       postRepo,
-		contextTimeout: timeout,
-		env:            env,
+		postRepo:           postRepo,
+		contextTimeout:     timeout,
+		env:                env,
+		interactionService: interactionService,
 	}
 }
 
@@ -94,8 +97,14 @@ func (u *postService) Detail(c context.Context, req domain.PostDetailRequest) (d
 	if err != nil {
 		return domain.ErrorResp("Get post detail failed", err), err
 	}
-	go func() {
-		// TODO kafka consume read count
-	}()
-	return domain.SuccesResp(post), nil
+	// go func() {
+	// TODO kafka consume read count
+	if err := u.interactionService.IncrReadCount(ctx, domain.BizPost, req.PostID); err != nil {
+		slog.Warn("Incr read count failed", "Error", err)
+	}
+	// }()
+	return domain.SuccesResp(map[string]interface{}{
+		"post_detail": post,
+		
+	}), nil
 }

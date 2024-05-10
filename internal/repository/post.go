@@ -11,10 +11,10 @@ import (
 
 type postRepository struct {
 	dao   orm.Database
-	cache cache.Cache
+	cache cache.RedisCache
 }
 
-func NewPostRepository(dao orm.Database, cache cache.Cache) domain.PostRepository {
+func NewPostRepository(dao orm.Database, cache cache.RedisCache) domain.PostRepository {
 	return &postRepository{dao: dao, cache: cache}
 }
 

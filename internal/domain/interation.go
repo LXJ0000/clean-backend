@@ -1,6 +1,8 @@
 package domain
 
-import "context"
+import (
+	"context"
+)
 
 const (
 	BizPost = "post"
@@ -23,19 +25,19 @@ func (Interaction) TableName() string {
 
 //go:generate mockgen -source=./interaction.go -destination=./mock/interaction.go -package=domain_mock
 type InteractionService interface {
-	// IncrReadCount(c context.Context, biz string, id int64) error
-	// Like(c context.Context, biz string, bizID, userID int64) error
-	// CancelLike(c context.Context, biz string, bizID, userID int64) error
-	// Collect(c context.Context, biz string, bizID, userID, collectionID int64) error
-	// CancelCollect(c context.Context, biz string, bizID, userID, collectionID int64) error
-	// Stat(c context.Context, biz string, bizID, userID int64) (Interaction, UserInteractionInfo, error)
+	IncrReadCount(c context.Context, biz string, id int64) error
+	Like(c context.Context, biz string, bizID, userID int64) error
+	CancelLike(c context.Context, biz string, bizID, userID int64) error
+	Collect(c context.Context, biz string, bizID, userID, collectionID int64) error
+	CancelCollect(c context.Context, biz string, bizID, userID, collectionID int64) error
+	Stat(c context.Context, biz string, bizID, userID int64) (Interaction, UserInteractionStat, error)
 
-	IncrReadCount(c context.Context, req InteractionIncrReadCntRequest) (Response, error)
-	Like(c context.Context, req InteractionLikeRequest) (Response, error)
-	CancelLike(c context.Context, req InteractionLikeRequest) (Response, error)
-	Collect(c context.Context, req InteractionCollectRequest) (Response, error)
-	CancelCollect(c context.Context, req InteractionCollectRequest) (Response, error)
-	Stat(c context.Context, req InteractionStatRequest) (Response, error)
+	// IncrReadCount(c context.Context, req InteractionIncrReadCntRequest) (Response, error)
+	// Like(c context.Context, req InteractionLikeRequest) (Response, error)
+	// CancelLike(c context.Context, req InteractionLikeRequest) (Response, error)
+	// Collect(c context.Context, req InteractionCollectRequest) (Response, error)
+	// CancelCollect(c context.Context, req InteractionCollectRequest) (Response, error)
+	// Stat(c context.Context, req InteractionStatRequest) (Response, error)
 
 	//	TODO 展示用户收藏、点赞列表 select bizID from 。。。 where biz and userID
 	//GetByIDs(c context.Context, biz string, bizIDs []int64) (map[int64]Interaction, error)

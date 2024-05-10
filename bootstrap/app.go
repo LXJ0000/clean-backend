@@ -11,7 +11,7 @@ type Application struct {
 	Env *Env
 
 	Orm        orm.Database
-	RedisCache cache.Cache
+	RedisCache cache.RedisCache
 }
 
 func App() Application {

@@ -9,7 +9,7 @@ import (
 	"golang.org/x/net/context"
 )
 
-func NewRedisCache(env *Env) cache.Cache {
+func NewRedisCache(env *Env) cache.RedisCache {
 	cmd := redis.NewClient(&redis.Options{
 		Addr: env.RedisAddr,
 	})

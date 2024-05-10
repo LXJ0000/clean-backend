@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Setup(env *bootstrap.Env, timeout time.Duration, db orm.Database, redisCache cache.Cache, gin *gin.Engine) {
+func Setup(env *bootstrap.Env, timeout time.Duration, db orm.Database, redisCache cache.RedisCache, gin *gin.Engine) {
 
 	// publicRouter := gin.Group("/api")
 	// All Public APIs
