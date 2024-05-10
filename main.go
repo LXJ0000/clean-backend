@@ -17,13 +17,15 @@ func main() {
 
 	db := app.Orm
 	redisCache := app.RedisCache
+	saramaClient := app.SaramaClient
+	producer := app.Producer
 
 	timeout := time.Duration(env.ContextTimeout) * time.Hour // 接口超时时间
 
 	server := gin.Default()
 	server.Use(middleware.CORSMiddleware())
 	server.Use(middleware.RateLimitMiddleware())
-	route.Setup(env, timeout, db, redisCache, server)
+	route.Setup(env, timeout, db, redisCache, server, saramaClient, producer)
 
 	_ = server.Run(env.ServerAddress)
 
